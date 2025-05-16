@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Local AI Chatbot</title>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    #chat-box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 400px;
+      overflow-y: auto;
+      background-color: #fff;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin: 10px 0;
+    }
+    .user {
+      color: blue;
+    }
+    .ai {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h2>🤖 Local AI Chatbot</h2>
+
+  <div id="chat-box"></div>
+
+  <input type="text" id="user-input" placeholder="Type your message..." style="width: 75%;">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const inputField = document.getElementById("user-input");
+      const message = inputField.value.trim();
+      if (!message) return;
+
+      appendMessage("You", message, "user");
+      inputField.value = "";
+
+      try {
+        const response = await fetch("http://localhost:5001/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: message })
+        });
+
+        if (!response.ok) {
+          throw new Error("Server returned error " + response.status);
+        }
+
+        const data = await response.json();
+        appendMessage("AI", data.response, "ai");
+      } catch (err) {
+        appendMessage("Error", err.message, "ai");
+      }
+    }
+
+    function appendMessage(sender, text, className) {
+      const chatBox = document.getElementById("chat-box");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${className}`;
+      messageDiv.textContent = `${sender}: ${text}`;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
