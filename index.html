@@ -5,64 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Chat Website</title>
     <style>
-        /* Previous styles remain the same */
-        .friend-request {
-            padding: 10px;
-            background-color: #e7f3ff;
-            border-radius: 4px;
-            margin-bottom: 10px;
+        /* Base styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        .friend-request button {
-            margin-left: 10px;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .accept-btn {
+        .header {
             background-color: #1877f2;
             color: white;
+            padding: 10px 0;
         }
-        .reject-btn {
-            background-color: #dc3545;
-            color: white;
-        }
-        .tabs {
+        /* Auth styles */
+        .auth-container {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .auth-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
             margin-bottom: 15px;
         }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f0f2f5;
-            border: none;
-            margin-right: 5px;
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
         }
-        .tab.active {
-            background-color: #1877f2;
-            color: white;
-        }
-        .search-container {
-            margin-bottom: 15px;
-        }
-        .search-container input {
+        .form-group input {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        .user-status {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
-        .online {
-            background-color: #28a745;
-        }
-        .offline {
-            background-color: #dc3545;
+        .auth-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #1877f2;
+            color: white;
         }
     </style>
 </head>
@@ -71,272 +69,131 @@
         <div class="container">
             <h1>Social Chat</h1>
         </div>
-        <div id="userInfo" style="display: none;">
-            <span id="username"></span>
-            <button onclick="logout()">Logout</button>
-        </div>
-    </div>
-    
-    <div id="authContainer" class="auth-container">
-        <div class="auth-form">
-            <h2 id="authTitle">Login</h2>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" required>
-            </div>
-            <div id="registerFields" style="display: none;">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="usernameInput" required>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" required>
-                </div>
-            </div>
-            <div class="auth-buttons">
-                <button onclick="submitAuth()">Submit</button>
-                <button onclick="toggleAuth()">Switch to Register</button>
-            </div>
-        </div>
     </div>
 
     <div class="container">
-        <div id="chatContainer" class="chat-container">
-            <div class="sidebar">
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('friends')">Friends</button>
-                    <button class="tab" onclick="switchTab('requests')">Requests</button>
-                    <button class="tab" onclick="switchTab('search')">Find Users</button>
-                </div>
-
-                <div id="friendsTab">
-                    <h2>Friends</h2>
-                    <ul class="user-list" id="friendsList">
-                        <!-- Friends will be listed here -->
-                    </ul>
-                </div>
-
-                <div id="requestsTab" style="display: none;">
-                    <h2>Friend Requests</h2>
-                    <div id="friendRequests">
-                        <!-- Friend requests will be shown here -->
+        <div class="auth-container" id="authContainer">
+            <div class="auth-form">
+                <h2 id="authTitle">Login</h2>
+                <form id="authForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" required>
                     </div>
-                </div>
-
-                <div id="searchTab" style="display: none;">
-                    <h2>Find Users</h2>
-                    <div class="search-container">
-                        <input type="text" id="searchInput" placeholder="Search users..." onkeyup="searchUsers()">
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" required>
                     </div>
-                    <ul class="user-list" id="searchResults">
-                        <!-- Search results will be shown here -->
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="chat-area">
-                <div class="message-box" id="messageBox">
-                    <!-- Messages will be displayed here -->
-                </div>
-                <div class="input-area">
-                    <input type="text" id="messageInput" placeholder="Type your message...">
-                    <button onclick="sendMessage()">Send</button>
-                </div>
+                    <div id="registerFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="usernameInput" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password:</label>
+                            <input type="password" id="confirmPassword" required>
+                        </div>
+                    </div>
+                    <div class="auth-buttons">
+                        <button type="submit" id="submitButton">Login</button>
+                        <button type="button" onclick="toggleAuthMode()">Switch to Register</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Mock database for demo purposes
-        let users = [
-            { id: 1, email: 'user1@example.com', username: 'User1', friends: [], friendRequests: [] },
-            { id: 2, email: 'user2@example.com', username: 'User2', friends: [], friendRequests: [] },
-            { id: 3, email: 'user3@example.com', username: 'User3', friends: [], friendRequests: [] }
-        ];
+        let isLoginMode = true;
+        const authForm = document.getElementById('authForm');
+        const authTitle = document.getElementById('authTitle');
+        const registerFields = document.getElementById('registerFields');
+        const submitButton = document.getElementById('submitButton');
 
-        let isLogin = true;
-        let currentUser = null;
-
-        function toggleAuth() {
-            isLogin = !isLogin;
-            document.getElementById('authTitle').textContent = isLogin ? 'Login' : 'Register';
-            document.getElementById('registerFields').style.display = isLogin ? 'none' : 'block';
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            authTitle.textContent = isLoginMode ? 'Login' : 'Register';
+            submitButton.textContent = isLoginMode ? 'Login' : 'Register';
+            registerFields.style.display = isLoginMode ? 'none' : 'block';
+            
+            // Reset form
+            authForm.reset();
         }
 
-        function submitAuth() {
+        function handleSubmit(event) {
+            event.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            if (isLogin) {
+            if (isLoginMode) {
                 // Login logic
-                const user = users.find(u => u.email === email);
-                if (user) {
-                    currentUser = user;
-                    loginSuccess();
-                } else {
-                    alert('User not found!');
-                }
+                console.log('Logging in with:', email);
+                // Here you would typically make an API call to your backend
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Login successful!');
+                        // Handle successful login
+                    } else {
+                        alert('Login failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during login');
+                });
             } else {
                 // Register logic
                 const username = document.getElementById('usernameInput').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
 
-                if (email && password && username && confirmPassword) {
-                    if (password !== confirmPassword) {
-                        alert('Passwords do not match!');
-                        return;
-                    }
-                    // Create new user
-                    const newUser = {
-                        id: users.length + 1,
-                        email: email,
-                        username: username,
-                        friends: [],
-                        friendRequests: []
-                    };
-                    users.push(newUser);
-                    currentUser = newUser;
-                    loginSuccess();
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match!');
+                    return;
                 }
+
+                console.log('Registering with:', email, username);
+                // Here you would typically make an API call to your backend
+                fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        username: username
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Registration successful! Please login.');
+                        toggleAuthMode(); // Switch back to login mode
+                    } else {
+                        alert('Registration failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during registration');
+                });
             }
         }
-
-        function loginSuccess() {
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
-            document.getElementById('userInfo').style.display = 'block';
-            document.getElementById('username').textContent = currentUser.username;
-            updateFriendsList();
-            updateFriendRequests();
-        }
-
-        function logout() {
-            currentUser = null;
-            document.getElementById('authContainer').style.display = 'flex';
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('userInfo').style.display = 'none';
-            clearFormFields();
-        }
-
-        function clearFormFields() {
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('confirmPassword').value = '';
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
-            
-            document.getElementById('friendsTab').style.display = tab === 'friends' ? 'block' : 'none';
-            document.getElementById('requestsTab').style.display = tab === 'requests' ? 'block' : 'none';
-            document.getElementById('searchTab').style.display = tab === 'search' ? 'block' : 'none';
-        }
-
-        function searchUsers() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const searchResults = users.filter(user => 
-                user.id !== currentUser.id && 
-                !currentUser.friends.includes(user.id) &&
-                user.username.toLowerCase().includes(searchTerm)
-            );
-
-            const searchResultsElement = document.getElementById('searchResults');
-            searchResultsElement.innerHTML = '';
-            
-            searchResults.forEach(user => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${user.username}
-                    <button onclick="sendFriendRequest(${user.id})">Add Friend</button>
-                `;
-                searchResultsElement.appendChild(li);
-            });
-        }
-
-        function sendFriendRequest(userId) {
-            const targetUser = users.find(u => u.id === userId);
-            if (targetUser && !targetUser.friendRequests.includes(currentUser.id)) {
-                targetUser.friendRequests.push(currentUser.id);
-                alert(`Friend request sent to ${targetUser.username}`);
-            }
-        }
-
-        function updateFriendRequests() {
-            const requestsContainer = document.getElementById('friendRequests');
-            requestsContainer.innerHTML = '';
-
-            currentUser.friendRequests.forEach(requesterId => {
-                const requester = users.find(u => u.id === requesterId);
-                const requestElement = document.createElement('div');
-                requestElement.className = 'friend-request';
-                requestElement.innerHTML = `
-                    ${requester.username} wants to be your friend
-                    <button class="accept-btn" onclick="acceptFriendRequest(${requester.id})">Accept</button>
-                    <button class="reject-btn" onclick="rejectFriendRequest(${requester.id})">Reject</button>
-                `;
-                requestsContainer.appendChild(requestElement);
-            });
-        }
-
-        function acceptFriendRequest(requesterId) {
-            currentUser.friends.push(requesterId);
-            const requester = users.find(u => u.id === requesterId);
-            requester.friends.push(currentUser.id);
-            
-            currentUser.friendRequests = currentUser.friendRequests.filter(id => id !== requesterId);
-            
-            updateFriendsList();
-            updateFriendRequests();
-        }
-
-        function rejectFriendRequest(requesterId) {
-            currentUser.friendRequests = currentUser.friendRequests.filter(id => id !== requesterId);
-            updateFriendRequests();
-        }
-
-        function updateFriendsList() {
-            const friendsList = document.getElementById('friendsList');
-            friendsList.innerHTML = '';
-
-            currentUser.friends.forEach(friendId => {
-                const friend = users.find(u => u.id === friendId);
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span class="user-status ${Math.random() > 0.5 ? 'online' : 'offline'}"></span>
-                    ${friend.username}
-                `;
-                friendsList.appendChild(li);
-            });
-        }
-
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const messageBox = document.getElementById('messageBox');
-            
-            if (messageInput.value.trim() !== '') {
-                const messageElement = document.createElement('p');
-                messageElement.textContent = `${currentUser.username}: ${messageInput.value}`;
-                messageBox.appendChild(messageElement);
-                messageInput.value = '';
-                messageBox.scrollTop = messageBox.scrollHeight;
-            }
-        }
-
-        // Allow sending message with Enter key
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
     </script>
 </body>
 </html>
+
 
 
